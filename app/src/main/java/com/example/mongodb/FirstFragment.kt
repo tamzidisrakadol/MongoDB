@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
-    val appId = "application-0-ooypj"
+    val appId = BuildConfig.appId
 
     // This property is only valid between onCreateView and
     // onDestroyView.
