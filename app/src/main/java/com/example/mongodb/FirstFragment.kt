@@ -17,16 +17,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
+
 class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
     val appId = BuildConfig.appId
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -54,6 +51,33 @@ class FirstFragment : Fragment() {
                 withContext(Dispatchers.Main){
                     Toast.makeText(requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+                }
+            }
+        }
+
+        binding.emailLogin.setOnClickListener {
+            val email = binding.userNameETV.text.toString()
+            val pass = binding.passNameETV.text.toString()
+           if(email.isNotEmpty() && pass.isNotEmpty()){
+               lifecycleScope.launch {
+                   val user = app.login(Credentials.emailPassword(email,pass))
+                   withContext(Dispatchers.Main){
+                       Toast.makeText(requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
+                       findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+                   }
+               }
+           }
+        }
+
+        binding.registerLogin.setOnClickListener {
+            val email = binding.userNameETV.text.toString()
+            val pass = binding.passNameETV.text.toString()
+            if (email.isNotEmpty() && pass.isNotEmpty()){
+                lifecycleScope.launch {
+                    val user = app.emailPasswordAuth.registerUser(email,pass)
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(requireContext(), "successfully created", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
