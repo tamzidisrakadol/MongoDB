@@ -34,9 +34,11 @@ class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
     private val appId = BuildConfig.appId
-    private val clientID="890005986853-8tbsjb4bt6mpdpgmuv7941svikhg5sgp.apps.googleusercontent.com"
+    private val clientID =
+        "890005986853-aknku4br5sv63br33kr6u0pgibjkfcle.apps.googleusercontent.com"
     private val app = App.Companion.create(appId)
-    
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -47,6 +49,16 @@ class FirstFragment : Fragment() {
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
         return binding.root
 
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                val task: Task<GoogleSignInAccount> =
+                    GoogleSignIn.getSignedInAccountFromIntent(it.data)
+                handleSignInResult(task)
+            }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,7 +73,7 @@ class FirstFragment : Fragment() {
         binding.login1.setOnClickListener {
             lifecycleScope.launch {
                 val user = app.login(Credentials.anonymous())
-                withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
                 }
@@ -71,25 +83,26 @@ class FirstFragment : Fragment() {
         binding.emailLogin.setOnClickListener {
             val email = binding.userNameETV.text.toString()
             val pass = binding.passNameETV.text.toString()
-           if(email.isNotEmpty() && pass.isNotEmpty()){
-               lifecycleScope.launch {
-                   val user = app.login(Credentials.emailPassword(email,pass))
-                   withContext(Dispatchers.Main){
-                       Toast.makeText(requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
-                       findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-                   }
-               }
-           }
+            if (email.isNotEmpty() && pass.isNotEmpty()) {
+                lifecycleScope.launch {
+                    val user = app.login(Credentials.emailPassword(email, pass))
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+                    }
+                }
+            }
         }
 
         binding.registerLogin.setOnClickListener {
             val email = binding.userNameETV.text.toString()
             val pass = binding.passNameETV.text.toString()
-            if (email.isNotEmpty() && pass.isNotEmpty()){
+            if (email.isNotEmpty() && pass.isNotEmpty()) {
                 lifecycleScope.launch {
-                    val user = app.emailPasswordAuth.registerUser(email,pass)
-                    withContext(Dispatchers.Main){
-                        Toast.makeText(requireContext(), "successfully created", Toast.LENGTH_SHORT).show()
+                    val user = app.emailPasswordAuth.registerUser(email, pass)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "successfully created", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
@@ -106,27 +119,31 @@ class FirstFragment : Fragment() {
         _binding = null
     }
 
-    private fun loginWithGoogle(){
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(clientID)
-            .build()
-        val googleSignInClient = GoogleSignIn.getClient(requireContext(),gso)
+    private fun loginWithGoogle() {
+        val gso =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(clientID)
+                .build()
+
+        val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+
         val signInIntent = googleSignInClient.signInIntent
-        val resultLauncher:ActivityResultLauncher<Intent> = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()){
-            val task:Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(it.data)
-            handleSignInResult(task)
-        }
         resultLauncher.launch(signInIntent)
     }
+
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             if (completedTask.isSuccessful) {
-                val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
+                val account: GoogleSignInAccount? =
+                    completedTask.getResult(ApiException::class.java)
                 val token: String = account?.idToken!!
 
                 lifecycleScope.launch {
                     val user = app.login(Credentials.google(token, GoogleAuthType.ID_TOKEN))
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Logged in", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+                    }
                 }
 
             } else {
@@ -136,7 +153,6 @@ class FirstFragment : Fragment() {
             Log.e("AUTH", "Failed to authenticate using Google OAuth: " + e.message);
         }
     }
-
 
 
 }
