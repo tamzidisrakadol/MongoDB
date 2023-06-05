@@ -35,7 +35,7 @@ class FirstFragment : Fragment() {
     private var _binding: FragmentFirstBinding? = null
     private val appId = BuildConfig.appId
     private val clientID =
-        "890005986853-aknku4br5sv63br33kr6u0pgibjkfcle.apps.googleusercontent.com"
+        "890005986853-81e1gm0mfarnnn8pfjin1k907oicejq5.apps.googleusercontent.com"
     private val app = App.Companion.create(appId)
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
@@ -63,8 +63,6 @@ class FirstFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
 
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
@@ -120,14 +118,13 @@ class FirstFragment : Fragment() {
     }
 
     private fun loginWithGoogle() {
-        val gso =
-            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(clientID)
-                .build()
-
+        val gso = GoogleSignInOptions
+            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(clientID)
+            .build()
         val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
 
-        val signInIntent = googleSignInClient.signInIntent
+        val signInIntent: Intent = googleSignInClient.signInIntent
         resultLauncher.launch(signInIntent)
     }
 
@@ -137,6 +134,7 @@ class FirstFragment : Fragment() {
                 val account: GoogleSignInAccount? =
                     completedTask.getResult(ApiException::class.java)
                 val token: String = account?.idToken!!
+                Log.d("user","user : $token")
 
                 lifecycleScope.launch {
                     val user = app.login(Credentials.google(token, GoogleAuthType.ID_TOKEN))
@@ -153,6 +151,4 @@ class FirstFragment : Fragment() {
             Log.e("AUTH", "Failed to authenticate using Google OAuth: " + e.message);
         }
     }
-
-
 }
