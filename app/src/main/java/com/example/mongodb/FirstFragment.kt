@@ -34,8 +34,7 @@ class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
     private val appId = BuildConfig.appId
-    private val clientID =
-        "890005986853-81e1gm0mfarnnn8pfjin1k907oicejq5.apps.googleusercontent.com"
+    private val clientID =BuildConfig.clientID
     private val app = App.Companion.create(appId)
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 

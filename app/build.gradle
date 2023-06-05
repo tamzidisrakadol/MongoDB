@@ -22,6 +22,7 @@ android {
         Properties properties = new Properties()
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
         buildConfigField "String", "appId", "\"${properties.getProperty("appId")}\""
+        buildConfigField "String", "clientID", "\"${properties.getProperty("clientID")}\""
     }
 
     buildTypes {
