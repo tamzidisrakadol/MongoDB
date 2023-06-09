@@ -33,8 +33,8 @@ import kotlinx.coroutines.withContext
 class FirstFragment : Fragment() {
 
     private var _binding: FragmentFirstBinding? = null
-    private val appId = BuildConfig.appId
     private val clientID =BuildConfig.clientID
+    private val appId = BuildConfig.appId
     private val app = App.Companion.create(appId)
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
@@ -63,9 +63,12 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
+
 
         binding.login1.setOnClickListener {
             lifecycleScope.launch {
